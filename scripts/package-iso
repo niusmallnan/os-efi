@@ -15,7 +15,7 @@ mkdir -p ${CD}/boot/grub
 cp scripts/grub/grub.cfg ${CD}/boot/grub
 cp -r /usr/lib/grub/x86_64-efi/ ${CD}/boot/grub
 
-cp ${DOWNLOADS}/INITRD      ${CD}/boot
+cp ${DOWNLOADS}/initrd      ${CD}/boot
 cp ${DOWNLOADS}/vmlinuz     ${CD}/boot
 
 pushd ${CD}
@@ -37,8 +37,7 @@ rm -rf ${CD}/EFI
 pushd ${CD}
 xorriso \
     -as mkisofs \
-    -l -J -R -V "${DISTRIB_ID}" \
-    -no-emul-boot -boot-load-size 4 -boot-info-table \
+    -l -J -R -V "RancherOS" \
     -eltorito-alt-boot \
     -e ${EFIIMG} -no-emul-boot \
     -isohybrid-gpt-basdat \

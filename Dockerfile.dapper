@@ -3,10 +3,12 @@ FROM ubuntu:bionic
 
 RUN apt-get update \
     && apt-get install -y \
+        vim \
         git  \
         curl  \
         xorriso \
         grub-efi \
+        dosfstools \
     && rm -f /bin/sh && ln -s /bin/bash /bin/sh
 
 ########## Dapper Configuration #####################
@@ -14,7 +16,7 @@ RUN apt-get update \
 ENV DAPPER_ENV DEBUG
 ENV DAPPER_DOCKER_SOCKET true
 ENV DAPPER_SOURCE /source
-ENV DAPPER_OUTPUT ./bin ./dist ./build
+ENV DAPPER_OUTPUT ./dist ./build
 ENV DAPPER_RUN_ARGS --privileged
 ENV SHELL /bin/bash
 WORKDIR ${DAPPER_SOURCE}
