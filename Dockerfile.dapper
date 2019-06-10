@@ -1,0 +1,35 @@
+FROM ubuntu:bionic
+# FROM arm64=arm64v8/ubuntu:bionic
+
+RUN apt-get update \
+    && apt-get install -y \
+        git  \
+        curl  \
+        xorriso \
+        grub-efi \
+    && rm -f /bin/sh && ln -s /bin/bash /bin/sh
+
+########## Dapper Configuration #####################
+
+ENV DAPPER_ENV DEBUG
+ENV DAPPER_DOCKER_SOCKET true
+ENV DAPPER_SOURCE /source
+ENV DAPPER_OUTPUT ./bin ./dist ./build
+ENV DAPPER_RUN_ARGS --privileged
+ENV SHELL /bin/bash
+WORKDIR ${DAPPER_SOURCE}
+
+########## General Configuration #####################
+ARG DAPPER_HOST_ARCH
+ENV ARCH $DAPPER_HOST_ARCH
+
+ARG OS_VERSION=v1.5.2
+ARG INITRD_URL=https://github.com/rancher/os/releases/download/${OS_VERSION}/initrd
+ARG VMLINUZ_URL=https://github.com/rancher/os/releases/download/${OS_VERSION}/vmlinuz
+
+ENV INITRD_URL=${INITRD_URL} \
+    VMLINUZ_URL=${VMLINUZ_URL} \
+    DOWNLOADS=/usr/src/downloads
+
+ENTRYPOINT ["./scripts/entry"]
+CMD ["ci"]

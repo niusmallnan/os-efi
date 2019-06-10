@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+
+source $(dirname $0)/version
+cd $(dirname $0)/..
+
+mkdir -p dist/artifacts
+
+CD=build/cd
+ISO=$(pwd)/dist/artifacts/rancheros-efi.iso
+
+mkdir -p ${CD}/EFI/BOOT
+mkdir -p ${CD}/boot/grub
+
+cp scripts/grub/grub.cfg ${CD}/boot/grub
+cp -r /usr/lib/grub/x86_64-efi/ ${CD}/boot/grub
+
+cp ${DOWNLOADS}/INITRD      ${CD}/boot
+cp ${DOWNLOADS}/vmlinuz     ${CD}/boot
+
+pushd ${CD}
+grub-mkimage -O x86_64-efi -o EFI/BOOT/BOOTX64.EFI --config=boot/grub/grub.cfg --compression=auto --prefix='()/boot/grub' disk part_msdos fat iso9660
+popd
+
+# make the EFI FAT filesystem to boot
+EFIIMG=boot/efiboot.img
+CDEFI=${CD}/${EFIIMG}
+dd if=/dev/zero of=${CDEFI} bs=4k count=1000
+mkfs.vfat ${CDEFI}
+mkdir -p tmp/
+mount -o loop ${CDEFI} tmp/
+cp -r ${CD}/EFI tmp/
+umount tmp/
+rmdir tmp/
+rm -rf ${CD}/EFI
+
+pushd ${CD}
+xorriso \
+    -as mkisofs \
+    -l -J -R -V "${DISTRIB_ID}" \
+    -no-emul-boot -boot-load-size 4 -boot-info-table \
+    -eltorito-alt-boot \
+    -e ${EFIIMG} -no-emul-boot \
+    -isohybrid-gpt-basdat \
+    -o $ISO .
+popd
