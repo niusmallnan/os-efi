@@ -5,4 +5,4 @@ source $(dirname $0)/version
 cd $(dirname $0)/..
 
 ./scripts/download
-./scripts/package-iso
+./scripts/package-grub-iso

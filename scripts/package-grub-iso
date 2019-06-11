@@ -7,7 +7,7 @@ cd $(dirname $0)/..
 mkdir -p dist/artifacts
 
 CD=build/cd
-ISO=$(pwd)/dist/artifacts/rancheros-efi.iso
+ISO=$(pwd)/dist/artifacts/rancheros-grub-efi.iso
 
 mkdir -p ${CD}/EFI/BOOT
 mkdir -p ${CD}/boot/grub
